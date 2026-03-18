@@ -1,30 +1,85 @@
-import { useState } from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { Search, ArrowLeft, MapPin } from "lucide-react";
+import { sampleProducts, type Product } from "@/data/products";
 
 const categories = [
   { id: "all", label: "All Items" },
-  { id: "electronics", label: "Electronics", examples: "Fan, TV, Refrigerator, Cooler, AC" },
-  { id: "furniture", label: "Furniture", examples: "Chair, Table, Bed, Desk" },
-  { id: "clothes", label: "Clothes", examples: "Shirt, T-shirt, Jeans, Shoes" },
-  { id: "stationery", label: "Stationery", examples: "Pen, Pencil, Books, Geometry Box" },
-  { id: "other", label: "Other Items", examples: "Household items & more" },
+  { id: "electronics", label: "Electronics" },
+  { id: "furniture", label: "Furniture" },
+  { id: "clothes", label: "Clothes" },
+  { id: "stationery", label: "Stationery" },
+  { id: "other", label: "Other Items" },
 ];
 
-// Placeholder products (will be replaced with DB data)
-const sampleProducts = [
-  { id: 1, name: "Samsung 32\" LED TV", price: 4500, category: "electronics", condition: "Good", image: "📺" },
-  { id: 2, name: "Wooden Study Table", price: 1200, category: "furniture", condition: "Fair", image: "🪑" },
-  { id: 3, name: "Levi's Denim Jacket", price: 800, category: "clothes", condition: "Like New", image: "🧥" },
-  { id: 4, name: "Geometry Box Set", price: 150, category: "stationery", condition: "Good", image: "📐" },
-  { id: 5, name: "Ceiling Fan - Havells", price: 600, category: "electronics", condition: "Working", image: "🌀" },
-  { id: 6, name: "Queen Size Bed Frame", price: 3500, category: "furniture", condition: "Good", image: "🛏️" },
-  { id: 7, name: "Nike Running Shoes (Size 9)", price: 1000, category: "clothes", condition: "Lightly Used", image: "👟" },
-  { id: 8, name: "Kitchen Utensils Set", price: 350, category: "other", condition: "Good", image: "🍳" },
-];
+const ProductDetail = ({ product, onBack }: { product: Product; onBack: () => void }) => (
+  <div className="animate-fade-in">
+    <div className="bg-card border-b border-border">
+      <div className="container py-4">
+        <button onClick={onBack} className="flex items-center gap-2 text-sm font-display text-primary hover:underline">
+          <ArrowLeft className="h-4 w-4" /> Back to listings
+        </button>
+      </div>
+    </div>
+    <div className="container py-8 max-w-4xl">
+      <div className="bg-card rounded-lg border border-border overflow-hidden md:flex">
+        <div className="md:w-1/2 bg-secondary h-64 md:h-auto flex items-center justify-center text-8xl">
+          {product.image}
+        </div>
+        <div className="md:w-1/2 p-6 space-y-4">
+          <span className="text-xs font-display font-semibold uppercase tracking-wider text-muted-foreground">{product.category}</span>
+          <h2 className="font-display text-2xl font-bold">{product.name}</h2>
+          <p className="font-display font-bold text-accent text-3xl">₹{product.price.toLocaleString("en-IN")}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="bg-secondary rounded-md px-3 py-2">
+              <span className="text-muted-foreground text-xs">Condition</span>
+              <p className="font-display font-semibold">{product.condition}</p>
+            </div>
+            {product.brand && (
+              <div className="bg-secondary rounded-md px-3 py-2">
+                <span className="text-muted-foreground text-xs">Brand</span>
+                <p className="font-display font-semibold">{product.brand}</p>
+              </div>
+            )}
+            {product.powerRating && (
+              <div className="bg-secondary rounded-md px-3 py-2">
+                <span className="text-muted-foreground text-xs">Power Rating</span>
+                <p className="font-display font-semibold">{product.powerRating}</p>
+              </div>
+            )}
+            {product.size && (
+              <div className="bg-secondary rounded-md px-3 py-2">
+                <span className="text-muted-foreground text-xs">Size</span>
+                <p className="font-display font-semibold">{product.size}</p>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2">
+            <MapPin className="h-3 w-3" /> Seller location will be visible after backend setup
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const BuyPage = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const selectedItemId = searchParams.get("item");
+  const selectedProduct = selectedItemId ? sampleProducts.find((p) => p.id === Number(selectedItemId)) : null;
+
+  // Scroll to top when item selected
+  useEffect(() => {
+    if (selectedItemId) window.scrollTo(0, 0);
+  }, [selectedItemId]);
+
+  if (selectedProduct) {
+    return <ProductDetail product={selectedProduct} onBack={() => setSearchParams({})} />;
+  }
 
   const filtered = sampleProducts.filter((p) => {
     const matchesCat = activeCategory === "all" || p.category === activeCategory;
@@ -37,7 +92,6 @@ const BuyPage = () => {
       <div className="bg-card border-b border-border">
         <div className="container py-6">
           <h2 className="font-display text-3xl font-bold mb-4">Buy Items</h2>
-          {/* Search */}
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
@@ -49,7 +103,6 @@ const BuyPage = () => {
             />
           </div>
         </div>
-        {/* Category Filter */}
         <div className="container pb-4 flex gap-2 overflow-x-auto">
           {categories.map((cat) => (
             <button
@@ -73,7 +126,11 @@ const BuyPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {filtered.map((product) => (
-              <div key={product.id} className="bg-card rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow group">
+              <Link
+                key={product.id}
+                to={`/buy?item=${product.id}`}
+                className="bg-card rounded-lg border border-border overflow-hidden hover:shadow-md transition-shadow group"
+              >
                 <div className="bg-secondary h-40 flex items-center justify-center text-5xl">
                   {product.image}
                 </div>
@@ -82,7 +139,7 @@ const BuyPage = () => {
                   <p className="text-xs text-muted-foreground mb-2">Condition: {product.condition}</p>
                   <p className="font-display font-bold text-accent text-lg">₹{product.price.toLocaleString("en-IN")}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
