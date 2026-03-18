@@ -1,6 +1,119 @@
-import { LogIn } from "lucide-react";
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { LogIn, LogOut, Package, Shield } from "lucide-react";
+import { toast } from "sonner";
 
 const SellPage = () => {
+  const { user, loading, signIn, signUp, signOut, isAdmin, isSupremeAdmin, roles } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+
+    if (isRegister) {
+      const { error } = await signUp(email, password, fullName);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Account created! You can now log in.");
+        setIsRegister(false);
+      }
+    } else {
+      const { error } = await signIn(email, password);
+      if (error) {
+        toast.error(error.message);
+      } else {
+        toast.success("Logged in successfully!");
+      }
+    }
+    setSubmitting(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  // Logged in view
+  if (user) {
+    return (
+      <div className="animate-fade-in">
+        <div className="bg-card border-b border-border">
+          <div className="container py-8">
+            <h2 className="font-display text-3xl font-bold mb-2">Seller Dashboard</h2>
+            <p className="text-muted-foreground">Welcome back, {user.email}</p>
+          </div>
+        </div>
+
+        <div className="container py-8 max-w-2xl mx-auto space-y-6">
+          {/* Role badges */}
+          <div className="flex gap-2 flex-wrap">
+            {roles.map((role) => (
+              <span key={role} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                <Shield className="h-3 w-3" />
+                {role.replace("_", " ").toUpperCase()}
+              </span>
+            ))}
+          </div>
+
+          {isSupremeAdmin && (
+            <div className="bg-card rounded-lg border border-primary/30 p-6">
+              <h3 className="font-display text-lg font-bold mb-2 flex items-center gap-2">
+                <Shield className="h-5 w-5 text-primary" />
+                Supreme Admin Panel
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                You have full control over sellers, products, and admin management.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-background rounded-lg p-4 text-center border border-border">
+                  <Package className="h-6 w-6 mx-auto mb-1 text-primary" />
+                  <p className="text-xs text-muted-foreground">Manage Products</p>
+                </div>
+                <div className="bg-background rounded-lg p-4 text-center border border-border">
+                  <Shield className="h-6 w-6 mx-auto mb-1 text-primary" />
+                  <p className="text-xs text-muted-foreground">Manage Sellers</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isAdmin && !isSupremeAdmin && (
+            <div className="bg-card rounded-lg border border-border p-6">
+              <h3 className="font-display text-lg font-bold mb-2">Admin Panel</h3>
+              <p className="text-sm text-muted-foreground">You can approve/reject seller accounts and products.</p>
+            </div>
+          )}
+
+          {!isAdmin && (
+            <div className="bg-card rounded-lg border border-border p-6">
+              <h3 className="font-display text-lg font-bold mb-2">Seller Status</h3>
+              <p className="text-sm text-muted-foreground">
+                Your account is pending approval. An admin will review and approve your seller account soon.
+              </p>
+            </div>
+          )}
+
+          <button
+            onClick={signOut}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <LogOut className="h-4 w-4" /> Sign Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Login/Register form
   return (
     <div className="animate-fade-in">
       <div className="bg-card border-b border-border">
@@ -13,25 +126,56 @@ const SellPage = () => {
       <div className="container py-12 max-w-lg mx-auto text-center">
         <div className="bg-card rounded-lg border border-border p-8">
           <LogIn className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h3 className="font-display text-xl font-bold mb-2">Seller Login Required</h3>
+          <h3 className="font-display text-xl font-bold mb-2">
+            {isRegister ? "Create Account" : "Seller Login"}
+          </h3>
           <p className="text-sm text-muted-foreground mb-6">
-            To sell on OldGold, you need a seller account. Log in or register below. Your account will be reviewed and approved by our admin team.
+            {isRegister
+              ? "Create your account to start selling on OldGold."
+              : "Log in to your seller account or register below."}
           </p>
-          <div className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {isRegister && (
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                required
+                className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+            )}
             <input
               type="email"
               placeholder="Email Address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
             <input
               type="password"
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
               className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
             />
-            <button className="w-full bg-primary text-primary-foreground font-display font-semibold py-2 rounded-lg hover:opacity-90 transition-opacity">
-              Login / Register
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-primary text-primary-foreground font-display font-semibold py-2 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {submitting ? "Please wait..." : isRegister ? "Create Account" : "Login"}
             </button>
-          </div>
+          </form>
+          <button
+            onClick={() => setIsRegister(!isRegister)}
+            className="text-xs text-primary mt-4 hover:underline"
+          >
+            {isRegister ? "Already have an account? Login" : "Don't have an account? Register"}
+          </button>
           <p className="text-xs text-muted-foreground mt-4">
             After login, complete your profile with contact details to start listing products.
           </p>
