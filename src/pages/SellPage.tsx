@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LogIn, LogOut, Package, Shield } from "lucide-react";
+import { LogIn, LogOut, Package, Shield, Store, Users } from "lucide-react";
 import { toast } from "sonner";
+import ManageAdmins from "@/components/admin/ManageAdmins";
+import ManageSellers from "@/components/admin/ManageSellers";
 
 const SellPage = () => {
   const { user, loading, signIn, signUp, signOut, isAdmin, isSupremeAdmin, roles } = useAuth();
@@ -10,6 +12,7 @@ const SellPage = () => {
   const [fullName, setFullName] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products">("sellers");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,60 +47,113 @@ const SellPage = () => {
 
   // Logged in view
   if (user) {
+    const isSeller = roles.includes("seller");
+
     return (
       <div className="animate-fade-in">
         <div className="bg-card border-b border-border">
-          <div className="container py-8">
-            <h2 className="font-display text-3xl font-bold mb-2">Seller Dashboard</h2>
-            <p className="text-muted-foreground">Welcome back, {user.email}</p>
+          <div className="container py-6">
+            <h2 className="font-display text-2xl font-bold mb-1">
+              {isSupremeAdmin ? "Supreme Admin Dashboard" : isAdmin ? "Admin Dashboard" : "Seller Dashboard"}
+            </h2>
+            <p className="text-sm text-muted-foreground">Welcome, {user.email}</p>
+            {/* Role badges */}
+            <div className="flex gap-2 flex-wrap mt-2">
+              {roles.map((role) => (
+                <span key={role} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  <Shield className="h-3 w-3" />
+                  {role.replace("_", " ").toUpperCase()}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="container py-8 max-w-2xl mx-auto space-y-6">
-          {/* Role badges */}
-          <div className="flex gap-2 flex-wrap">
-            {roles.map((role) => (
-              <span key={role} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                <Shield className="h-3 w-3" />
-                {role.replace("_", " ").toUpperCase()}
-              </span>
-            ))}
-          </div>
-
+        <div className="container py-6 max-w-2xl mx-auto space-y-6">
+          {/* Supreme Admin Panel */}
           {isSupremeAdmin && (
-            <div className="bg-card rounded-lg border border-primary/30 p-6">
+            <>
+              {/* Tab navigation */}
+              <div className="flex gap-1 bg-muted rounded-lg p-1">
+                <button
+                  onClick={() => setActiveTab("admins")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "admins"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Users className="h-4 w-4" />
+                  Admins
+                </button>
+                <button
+                  onClick={() => setActiveTab("sellers")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "sellers"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Store className="h-4 w-4" />
+                  Sellers
+                </button>
+                <button
+                  onClick={() => setActiveTab("products")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "products"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Package className="h-4 w-4" />
+                  Products
+                </button>
+              </div>
+
+              <div className="bg-card rounded-lg border border-border p-6">
+                {activeTab === "admins" && <ManageAdmins />}
+                {activeTab === "sellers" && <ManageSellers />}
+                {activeTab === "products" && (
+                  <div className="text-center py-8">
+                    <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground">Product management coming soon.</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* Secondary Admin Panel */}
+          {isAdmin && !isSupremeAdmin && (
+            <div className="bg-card rounded-lg border border-border p-6">
+              <ManageSellers />
+            </div>
+          )}
+
+          {/* Seller view */}
+          {!isAdmin && isSeller && (
+            <div className="bg-card rounded-lg border border-border p-6">
               <h3 className="font-display text-lg font-bold mb-2 flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                Supreme Admin Panel
+                <Store className="h-5 w-5 text-primary" />
+                Your Seller Account
               </h3>
               <p className="text-sm text-muted-foreground mb-4">
-                You have full control over sellers, products, and admin management.
+                You are an approved seller. You can list your products for sale.
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-background rounded-lg p-4 text-center border border-border">
-                  <Package className="h-6 w-6 mx-auto mb-1 text-primary" />
-                  <p className="text-xs text-muted-foreground">Manage Products</p>
-                </div>
-                <div className="bg-background rounded-lg p-4 text-center border border-border">
-                  <Shield className="h-6 w-6 mx-auto mb-1 text-primary" />
-                  <p className="text-xs text-muted-foreground">Manage Sellers</p>
-                </div>
+              <div className="bg-background rounded-lg border border-border p-4 text-center">
+                <Package className="h-8 w-8 mx-auto mb-2 text-primary" />
+                <p className="text-sm font-medium text-foreground">Product listing coming soon</p>
+                <p className="text-xs text-muted-foreground">You'll be able to add and manage your products here.</p>
               </div>
             </div>
           )}
 
-          {isAdmin && !isSupremeAdmin && (
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="font-display text-lg font-bold mb-2">Admin Panel</h3>
-              <p className="text-sm text-muted-foreground">You can approve/reject seller accounts and products.</p>
-            </div>
-          )}
-
-          {!isAdmin && (
+          {/* Regular user - not a seller or admin */}
+          {!isAdmin && !isSeller && (
             <div className="bg-card rounded-lg border border-border p-6">
               <h3 className="font-display text-lg font-bold mb-2">Seller Status</h3>
               <p className="text-sm text-muted-foreground">
-                Your account is pending approval. An admin will review and approve your seller account soon.
+                Your account doesn't have seller privileges yet. Contact an admin to get approved as a seller.
               </p>
             </div>
           )}
@@ -176,9 +232,6 @@ const SellPage = () => {
           >
             {isRegister ? "Already have an account? Login" : "Don't have an account? Register"}
           </button>
-          <p className="text-xs text-muted-foreground mt-4">
-            After login, complete your profile with contact details to start listing products.
-          </p>
         </div>
       </div>
     </div>
