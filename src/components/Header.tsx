@@ -13,26 +13,26 @@ const Header = () => {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-primary/20">
       {/* Brand Bar */}
       <div className="container flex items-center gap-3 py-2">
-        <img src={logo} alt="OldGold Logo" className="h-10 w-10 rounded-full object-cover" />
+        <img src={logo} alt="OldGold Logo" className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/30" />
         <div>
-          <h1 className="font-display text-lg font-bold text-primary leading-none">OldGold</h1>
-          <p className="text-[10px] text-muted-foreground">Luxury Vintage & Collectibles</p>
+          <h1 className="font-display text-lg font-bold gold-text leading-none tracking-wide">OldGold</h1>
+          <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Luxury Vintage & Collectibles</p>
         </div>
       </div>
       {/* Navigation */}
-      <nav className="bg-foreground">
+      <nav className="gold-gradient">
         <div className="container flex items-center gap-0.5 overflow-x-auto">
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`px-3 py-1.5 text-xs font-display font-semibold tracking-wide transition-colors ${
+              className={`px-3 py-1.5 text-xs font-display font-semibold tracking-wider transition-all ${
                 location.pathname === item.path
-                  ? "bg-primary text-primary-foreground"
-                  : "text-background/80 hover:text-background hover:bg-primary/20"
+                  ? "bg-background/95 text-foreground"
+                  : "text-primary-foreground/90 hover:text-primary-foreground hover:bg-background/10"
               }`}
             >
               {item.label.toUpperCase()}
