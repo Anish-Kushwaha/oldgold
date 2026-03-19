@@ -4,6 +4,10 @@ import { LogIn, LogOut, Package, Shield, Store, Users } from "lucide-react";
 import { toast } from "sonner";
 import ManageAdmins from "@/components/admin/ManageAdmins";
 import ManageSellers from "@/components/admin/ManageSellers";
+import ManageProducts from "@/components/admin/ManageProducts";
+import SellerProfileForm from "@/components/seller/SellerProfileForm";
+import AddProductForm from "@/components/seller/AddProductForm";
+import MyProducts from "@/components/seller/MyProducts";
 
 const SellPage = () => {
   const { user, loading, signIn, signUp, signOut, isAdmin, isSupremeAdmin, roles } = useAuth();
@@ -13,6 +17,7 @@ const SellPage = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products">("sellers");
+  const [productRefresh, setProductRefresh] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +62,6 @@ const SellPage = () => {
               {isSupremeAdmin ? "Supreme Admin Dashboard" : isAdmin ? "Admin Dashboard" : "Seller Dashboard"}
             </h2>
             <p className="text-sm text-muted-foreground">Welcome, {user.email}</p>
-            {/* Role badges */}
             <div className="flex gap-2 flex-wrap mt-2">
               {roles.map((role) => (
                 <span key={role} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
@@ -73,82 +77,69 @@ const SellPage = () => {
           {/* Supreme Admin Panel */}
           {isSupremeAdmin && (
             <>
-              {/* Tab navigation */}
               <div className="flex gap-1 bg-muted rounded-lg p-1">
                 <button
                   onClick={() => setActiveTab("admins")}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === "admins"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    activeTab === "admins" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Users className="h-4 w-4" />
-                  Admins
+                  <Users className="h-4 w-4" /> Admins
                 </button>
                 <button
                   onClick={() => setActiveTab("sellers")}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === "sellers"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    activeTab === "sellers" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Store className="h-4 w-4" />
-                  Sellers
+                  <Store className="h-4 w-4" /> Sellers
                 </button>
                 <button
                   onClick={() => setActiveTab("products")}
                   className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeTab === "products"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    activeTab === "products" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Package className="h-4 w-4" />
-                  Products
+                  <Package className="h-4 w-4" /> Products
                 </button>
               </div>
 
               <div className="bg-card rounded-lg border border-border p-6">
                 {activeTab === "admins" && <ManageAdmins />}
                 {activeTab === "sellers" && <ManageSellers />}
-                {activeTab === "products" && (
-                  <div className="text-center py-8">
-                    <Package className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground">Product management coming soon.</p>
-                  </div>
-                )}
+                {activeTab === "products" && <ManageProducts />}
               </div>
             </>
           )}
 
           {/* Secondary Admin Panel */}
           {isAdmin && !isSupremeAdmin && (
-            <div className="bg-card rounded-lg border border-border p-6">
-              <ManageSellers />
+            <div className="space-y-6">
+              <div className="bg-card rounded-lg border border-border p-6">
+                <ManageSellers />
+              </div>
+              <div className="bg-card rounded-lg border border-border p-6">
+                <ManageProducts />
+              </div>
             </div>
           )}
 
           {/* Seller view */}
           {!isAdmin && isSeller && (
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="font-display text-lg font-bold mb-2 flex items-center gap-2">
-                <Store className="h-5 w-5 text-primary" />
-                Your Seller Account
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                You are an approved seller. You can list your products for sale.
-              </p>
-              <div className="bg-background rounded-lg border border-border p-4 text-center">
-                <Package className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-sm font-medium text-foreground">Product listing coming soon</p>
-                <p className="text-xs text-muted-foreground">You'll be able to add and manage your products here.</p>
+            <div className="space-y-6">
+              <div className="bg-card rounded-lg border border-border p-6">
+                <SellerProfileForm />
+              </div>
+              <div className="bg-card rounded-lg border border-border p-6">
+                <AddProductForm onProductAdded={() => setProductRefresh((r) => r + 1)} />
+              </div>
+              <div className="bg-card rounded-lg border border-border p-6">
+                <MyProducts refreshKey={productRefresh} />
               </div>
             </div>
           )}
 
-          {/* Regular user - not a seller or admin */}
+          {/* Regular user */}
           {!isAdmin && !isSeller && (
             <div className="bg-card rounded-lg border border-border p-6">
               <h3 className="font-display text-lg font-bold mb-2">Seller Status</h3>
@@ -186,9 +177,7 @@ const SellPage = () => {
             {isRegister ? "Create Account" : "Seller Login"}
           </h3>
           <p className="text-sm text-muted-foreground mb-6">
-            {isRegister
-              ? "Create your account to start selling on OldGold."
-              : "Log in to your seller account or register below."}
+            {isRegister ? "Create your account to start selling on OldGold." : "Log in to your seller account or register below."}
           </p>
           <form onSubmit={handleSubmit} className="space-y-3">
             {isRegister && (
