@@ -302,7 +302,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
       >
         <Upload className="h-4 w-4" />
-        {submitting ? "Submitting..." : "Submit Product for Approval"}
+        {submitting ? "Submitting..." : "List Product"}
       </button>
     </form>
   );
