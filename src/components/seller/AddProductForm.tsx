@@ -103,7 +103,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
         size: size.trim() || null,
         seller_id: user.id,
         image_url: urlData.publicUrl,
-        is_approved: false,
+        is_approved: true,
       })
       .select("id")
       .single();
