@@ -138,7 +138,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
       await supabase.from("product_images").insert(imageInserts);
     }
 
-    toast.success("Product submitted for approval!");
+    toast.success("Product listed successfully!");
     // Reset form
     setName("");
     setDescription("");
