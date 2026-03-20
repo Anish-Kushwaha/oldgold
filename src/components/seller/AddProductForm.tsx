@@ -103,7 +103,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
         size: size.trim() || null,
         seller_id: user.id,
         image_url: urlData.publicUrl,
-        is_approved: false,
+        is_approved: true,
       })
       .select("id")
       .single();
@@ -138,7 +138,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
       await supabase.from("product_images").insert(imageInserts);
     }
 
-    toast.success("Product submitted for approval!");
+    toast.success("Product listed successfully!");
     // Reset form
     setName("");
     setDescription("");
@@ -302,7 +302,7 @@ const AddProductForm = ({ onProductAdded }: { onProductAdded?: () => void }) => 
         className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
       >
         <Upload className="h-4 w-4" />
-        {submitting ? "Submitting..." : "Submit Product for Approval"}
+        {submitting ? "Submitting..." : "List Product"}
       </button>
     </form>
   );
