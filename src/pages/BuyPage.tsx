@@ -148,8 +148,6 @@ const SellerDetails = ({ seller }: { seller: SellerProfile }) => {
 };
 
 const ProductDetail = ({ product, onBack }: { product: Product; onBack: () => void }) => {
-  const allImages = product.images?.sort((a, b) => a.display_order - b.display_order) || [];
-  const [activeImg, setActiveImg] = useState(0);
   const [seller, setSeller] = useState<SellerProfile | null>(null);
 
   useEffect(() => {
@@ -177,34 +175,11 @@ const ProductDetail = ({ product, onBack }: { product: Product; onBack: () => vo
         {/* Product card */}
         <div className="bg-card rounded-lg border border-border overflow-hidden md:flex">
           <div className="md:w-1/2">
-            {allImages.length > 0 ? (
-              <div>
-                <div className="h-64 md:h-80 bg-secondary flex items-center justify-center">
-                  <img src={allImages[activeImg]?.image_url} alt={product.name} className="w-full h-full object-contain" />
-                </div>
-                {allImages.length > 1 && (
-                  <div className="flex gap-1 p-2 overflow-x-auto">
-                    {allImages.map((img, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setActiveImg(i)}
-                        className={`w-14 h-14 rounded-md overflow-hidden border-2 flex-shrink-0 ${i === activeImg ? "border-primary" : "border-transparent"}`}
-                      >
-                        <img src={img.image_url} alt="" className="w-full h-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : product.image_url ? (
-              <div className="h-64 md:h-80 bg-secondary flex items-center justify-center">
-                <img src={product.image_url} alt={product.name} className="w-full h-full object-contain" />
-              </div>
-            ) : (
-              <div className="h-64 md:h-80 bg-secondary flex items-center justify-center">
-                <Package className="h-16 w-16 text-muted-foreground" />
-              </div>
-            )}
+            <ImageCarousel
+              images={product.images || []}
+              fallbackUrl={product.image_url}
+              altText={product.name}
+            />
           </div>
           <div className="md:w-1/2 p-6 space-y-4">
             <span className="text-xs font-display font-semibold uppercase tracking-wider text-muted-foreground">{product.category}</span>
