@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Search, ArrowLeft, MapPin, Package, Phone, MessageCircle, Mail, Globe, User } from "lucide-react";
+import ImageCarousel from "@/components/ImageCarousel";
+import ProductReviews from "@/components/ProductReviews";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Product {
