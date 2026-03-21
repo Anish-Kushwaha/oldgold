@@ -215,6 +215,9 @@ const ProductDetail = ({ product, onBack }: { product: Product; onBack: () => vo
 
         {/* Seller details */}
         {seller && <SellerDetails seller={seller} />}
+
+        {/* Product Reviews */}
+        <ProductReviews productId={product.id} />
       </div>
     </div>
   );

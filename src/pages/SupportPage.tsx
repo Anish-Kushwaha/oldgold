@@ -65,6 +65,9 @@ const SupportPage = () => {
             Go to Contact
           </a>
         </div>
+
+        {/* Site Reviews */}
+        <SiteReviews />
       </div>
     </div>
   );
