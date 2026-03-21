@@ -1,4 +1,5 @@
 import { Shield, AlertTriangle, FileText } from "lucide-react";
+import SiteReviews from "@/components/SiteReviews";
 
 const SupportPage = () => {
   return (
@@ -64,6 +65,9 @@ const SupportPage = () => {
             Go to Contact
           </a>
         </div>
+
+        {/* Site Reviews */}
+        <SiteReviews />
       </div>
     </div>
   );
