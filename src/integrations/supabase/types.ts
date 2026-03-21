@@ -91,6 +91,7 @@ export type Database = {
           condition: string
           created_at: string
           description: string | null
+          discount_price: number | null
           id: string
           image_url: string | null
           is_approved: boolean
@@ -101,6 +102,7 @@ export type Database = {
           seller_id: string
           size: string | null
           updated_at: string
+          view_count: number
         }
         Insert: {
           brand?: string | null
@@ -108,6 +110,7 @@ export type Database = {
           condition?: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           id?: string
           image_url?: string | null
           is_approved?: boolean
@@ -118,6 +121,7 @@ export type Database = {
           seller_id: string
           size?: string | null
           updated_at?: string
+          view_count?: number
         }
         Update: {
           brand?: string | null
@@ -125,6 +129,7 @@ export type Database = {
           condition?: string
           created_at?: string
           description?: string | null
+          discount_price?: number | null
           id?: string
           image_url?: string | null
           is_approved?: boolean
@@ -135,6 +140,7 @@ export type Database = {
           seller_id?: string
           size?: string | null
           updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
