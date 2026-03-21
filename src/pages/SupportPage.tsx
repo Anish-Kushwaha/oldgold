@@ -1,4 +1,5 @@
 import { Shield, AlertTriangle, FileText } from "lucide-react";
+import SiteReviews from "@/components/SiteReviews";
 
 const SupportPage = () => {
   return (
