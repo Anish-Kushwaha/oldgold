@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingBag, Tag, Shield, Users, ArrowRight, Star, Sparkles, Package } from "lucide-react";
+import { ShoppingBag, Tag, Shield, Users, ArrowRight, Star, Sparkles, Package, Heart, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { toast } from "sonner";
 
 const features = [
   { icon: ShoppingBag, title: "Buy Affordable Items", desc: "Find electronics, furniture, clothes and more at unbeatable prices from your community." },
@@ -16,20 +19,25 @@ interface FeaturedProduct {
   id: string;
   name: string;
   price: number;
+  discount_price: number | null;
   category: string;
   condition: string;
   image_url: string | null;
   description: string | null;
+  seller_id: string;
+  created_at: string;
 }
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const { addToCart, isInCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchFeatured = async () => {
       const { data } = await supabase
         .from("products")
-        .select("id, name, price, category, condition, image_url, description")
+        .select("id, name, price, discount_price, category, condition, image_url, description, seller_id, created_at")
         .eq("is_approved", true)
         .eq("is_sold", false)
         .order("created_at", { ascending: false })
@@ -38,6 +46,8 @@ const HomePage = () => {
     };
     fetchFeatured();
   }, []);
+
+  const isNew = (date: string) => Date.now() - new Date(date).getTime() < 3 * 24 * 60 * 60 * 1000;
 
   return (
     <div className="animate-fade-in">
@@ -57,27 +67,19 @@ const HomePage = () => {
             OldGold is a curated marketplace for pre-owned household items, electronics, clothes, and more — all at exceptional prices.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              to="/buy"
-              className="inline-flex items-center gap-2 gold-gradient text-primary-foreground font-display font-semibold px-7 py-3 rounded-lg gold-shadow hover:opacity-90 transition-all tracking-wide"
-            >
+            <Link to="/buy" className="inline-flex items-center gap-2 gold-gradient text-primary-foreground font-display font-semibold px-7 py-3 rounded-lg gold-shadow hover:opacity-90 transition-all tracking-wide">
               Start Browsing
             </Link>
-            <Link
-              to="/sell"
-              className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-display font-semibold px-7 py-3 rounded-lg hover:opacity-90 transition-all tracking-wide"
-            >
+            <Link to="/sell" className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-display font-semibold px-7 py-3 rounded-lg hover:opacity-90 transition-all tracking-wide">
               Sell Now
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="container">
-        <div className="h-px gold-gradient opacity-30" />
-      </div>
+      <div className="container"><div className="h-px gold-gradient opacity-30" /></div>
 
-      {/* Featured Products from DB */}
+      {/* Featured Products */}
       <section className="container py-16">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
@@ -93,41 +95,65 @@ const HomePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProducts.map((product) => (
-              <Link
-                key={product.id}
-                to={`/buy?item=${product.id}`}
-                className="bg-card rounded-lg border border-border overflow-hidden hover:gold-shadow hover:border-primary/30 transition-all group"
-              >
-                <div className="bg-secondary h-44 flex items-center justify-center relative">
-                  {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <Package className="h-12 w-12 text-muted-foreground" />
-                  )}
-                  <span className="absolute top-3 left-3 gold-gradient text-primary-foreground text-[10px] font-display font-bold px-2.5 py-0.5 rounded-full uppercase tracking-widest">
-                    New
-                  </span>
-                </div>
+              <div key={product.id} className="bg-card rounded-lg border border-border overflow-hidden hover:gold-shadow hover:border-primary/30 transition-all group relative">
+                <Link to={`/buy?item=${product.id}`} className="block">
+                  <div className="bg-secondary h-44 flex items-center justify-center relative">
+                    {product.image_url ? (
+                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Package className="h-12 w-12 text-muted-foreground" />
+                    )}
+                    {isNew(product.created_at) && (
+                      <span className="absolute top-3 left-3 gold-gradient text-primary-foreground text-[10px] font-display font-bold px-2.5 py-0.5 rounded-full uppercase tracking-widest">New</span>
+                    )}
+                    {product.discount_price && (
+                      <span className="absolute top-3 right-3 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {Math.round((1 - product.discount_price / product.price) * 100)}% OFF
+                      </span>
+                    )}
+                  </div>
+                </Link>
+                {/* Wishlist button */}
+                <button
+                  onClick={() => { toggleWishlist({ id: product.id, name: product.name, price: product.price, discount_price: product.discount_price, image_url: product.image_url, category: product.category, condition: product.condition }); toast.success(isInWishlist(product.id) ? "Removed" : "Saved!"); }}
+                  className="absolute top-3 right-3 p-1.5 rounded-full bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? "fill-red-500 text-red-500" : "text-muted-foreground"}`} />
+                </button>
                 <div className="p-4">
-                  <h4 className="font-display font-semibold mb-1 group-hover:text-primary transition-colors">{product.name}</h4>
+                  <Link to={`/buy?item=${product.id}`}>
+                    <h4 className="font-display font-semibold mb-1 group-hover:text-primary transition-colors">{product.name}</h4>
+                  </Link>
                   {product.description && <p className="text-xs text-muted-foreground mb-1 line-clamp-2">{product.description}</p>}
                   <p className="text-xs text-muted-foreground mb-2">Condition: {product.condition}</p>
-                  <div className="flex items-center justify-between">
-                    <p className="font-display font-bold text-primary text-lg">₹{product.price.toLocaleString("en-IN")}</p>
-                    <span className="text-xs font-display text-primary font-semibold flex items-center gap-1">
-                      View Details <ArrowRight className="h-3 w-3" />
-                    </span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      {product.discount_price ? (
+                        <>
+                          <p className="font-display font-bold text-primary text-lg">₹{product.discount_price.toLocaleString("en-IN")}</p>
+                          <p className="text-xs text-muted-foreground line-through">₹{product.price.toLocaleString("en-IN")}</p>
+                        </>
+                      ) : (
+                        <p className="font-display font-bold text-primary text-lg">₹{product.price.toLocaleString("en-IN")}</p>
+                      )}
+                    </div>
                   </div>
+                  <button
+                    onClick={() => { addToCart({ id: product.id, name: product.name, price: product.price, discount_price: product.discount_price, image_url: product.image_url, seller_id: product.seller_id }); toast.success("Added to cart!"); }}
+                    disabled={isInCart(product.id)}
+                    className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  >
+                    <ShoppingCart className="h-3.5 w-3.5" />
+                    {isInCart(product.id) ? "In Cart" : "Add to Cart"}
+                  </button>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
       </section>
 
-      <div className="container">
-        <div className="h-px gold-gradient opacity-30" />
-      </div>
+      <div className="container"><div className="h-px gold-gradient opacity-30" /></div>
 
       {/* Features */}
       <section className="py-16">
@@ -152,11 +178,7 @@ const HomePage = () => {
         <h3 className="font-display text-2xl font-bold mb-8">Browse Categories</h3>
         <div className="flex flex-wrap justify-center gap-3">
           {categories.map((cat) => (
-            <Link
-              key={cat}
-              to="/buy"
-              className="bg-card border border-border rounded-full px-6 py-2 font-display text-sm font-medium hover:border-primary hover:text-primary hover:gold-shadow transition-all"
-            >
+            <Link key={cat} to="/buy" className="bg-card border border-border rounded-full px-6 py-2 font-display text-sm font-medium hover:border-primary hover:text-primary hover:gold-shadow transition-all">
               {cat}
             </Link>
           ))}
