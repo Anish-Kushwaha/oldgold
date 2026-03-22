@@ -17,7 +17,7 @@ const SellPage = () => {
   const [fullName, setFullName] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products">("sellers");
+  const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products" | "team">("sellers");
   const [productRefresh, setProductRefresh] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
