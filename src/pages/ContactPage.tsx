@@ -198,7 +198,7 @@ const FounderCard = ({ member }: { member: TeamMember }) => {
    MEMBER — compact card
    ═══════════════════════════════════════════ */
 const MemberCard = ({ member }: { member: TeamMember }) => {
-  const photo = member.photo_url || photoMap[member.name] || "";
+  const photo = member.photo_url || "";
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
