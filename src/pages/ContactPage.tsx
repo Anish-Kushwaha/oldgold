@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import anishPhoto from "@/assets/Anish.png";
-import bhavyaPhoto from "@/assets/Bhavya.jpg";
-import shubhamPhoto from "@/assets/Shubham.jpg";
-import piyuPhoto from "@/assets/Piyu.jpg";
 import {
   Github, Linkedin, Twitter, Youtube, Mail, Globe, Code, Trophy,
   Gamepad2, Send, Facebook, Phone, MessageCircle, Crown, Star,
@@ -14,13 +11,8 @@ const iconMap: Record<string, any> = {
   Globe, Github, Linkedin, Twitter, Facebook, Youtube, Send, Code, Trophy, Gamepad2, Mail,
 };
 
-// Fallback photos by name
-const photoMap: Record<string, string> = {
-  "Anish Kushwaha": anishPhoto,
-  "Bhavya Pandey": bhavyaPhoto,
-  "Shubham Prakash": shubhamPhoto,
-  "Priyanshi Bairagi": piyuPhoto,
-};
+// Fallback photo only for founder
+const founderFallback = anishPhoto;
 
 interface TeamMember {
   id: string;
@@ -94,7 +86,7 @@ const ContactPage = () => {
    FOUNDER — premium, full-width card
    ═══════════════════════════════════════════ */
 const FounderCard = ({ member }: { member: TeamMember }) => {
-  const photo = member.photo_url || photoMap[member.name] || "";
+  const photo = member.photo_url || founderFallback;
   const socials = (member.social_links || []) as { icon: string; label: string; url: string }[];
   const companies = (member.companies || []) as { name: string; url: string }[];
 
@@ -206,7 +198,7 @@ const FounderCard = ({ member }: { member: TeamMember }) => {
    MEMBER — compact card
    ═══════════════════════════════════════════ */
 const MemberCard = ({ member }: { member: TeamMember }) => {
-  const photo = member.photo_url || photoMap[member.name] || "";
+  const photo = member.photo_url || "";
 
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden hover:shadow-md transition-shadow">
