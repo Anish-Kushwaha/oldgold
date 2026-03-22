@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import ManageAdmins from "@/components/admin/ManageAdmins";
 import ManageSellers from "@/components/admin/ManageSellers";
 import ManageProducts from "@/components/admin/ManageProducts";
+import ManageTeam from "@/components/admin/ManageTeam";
 import SellerProfileForm from "@/components/seller/SellerProfileForm";
 import AddProductForm from "@/components/seller/AddProductForm";
 import MyProducts from "@/components/seller/MyProducts";
