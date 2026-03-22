@@ -207,6 +207,60 @@ export type Database = {
         }
         Relationships: []
       }
+      team_members: {
+        Row: {
+          companies: Json | null
+          created_at: string
+          description: string | null
+          display_order: number
+          email: string | null
+          id: string
+          is_founder: boolean
+          name: string
+          phone: string | null
+          photo_url: string | null
+          role_label: string
+          social_links: Json | null
+          title: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          companies?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          email?: string | null
+          id?: string
+          is_founder?: boolean
+          name: string
+          phone?: string | null
+          photo_url?: string | null
+          role_label: string
+          social_links?: Json | null
+          title: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          companies?: Json | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          email?: string | null
+          id?: string
+          is_founder?: boolean
+          name?: string
+          phone?: string | null
+          photo_url?: string | null
+          role_label?: string
+          social_links?: Json | null
+          title?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

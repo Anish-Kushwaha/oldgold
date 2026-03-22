@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LogIn, LogOut, Package, Shield, Store, Users } from "lucide-react";
+import { LogIn, LogOut, Package, Shield, Store, Users, Crown } from "lucide-react";
 import { toast } from "sonner";
 import ManageAdmins from "@/components/admin/ManageAdmins";
 import ManageSellers from "@/components/admin/ManageSellers";
 import ManageProducts from "@/components/admin/ManageProducts";
+import ManageTeam from "@/components/admin/ManageTeam";
 import SellerProfileForm from "@/components/seller/SellerProfileForm";
 import AddProductForm from "@/components/seller/AddProductForm";
 import MyProducts from "@/components/seller/MyProducts";
@@ -16,7 +17,7 @@ const SellPage = () => {
   const [fullName, setFullName] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products">("sellers");
+  const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products" | "team">("sellers");
   const [productRefresh, setProductRefresh] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,12 +103,21 @@ const SellPage = () => {
                 >
                   <Package className="h-4 w-4" /> Products
                 </button>
+                <button
+                  onClick={() => setActiveTab("team")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "team" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Crown className="h-4 w-4" /> Team
+                </button>
               </div>
 
               <div className="bg-card rounded-lg border border-border p-6">
                 {activeTab === "admins" && <ManageAdmins />}
                 {activeTab === "sellers" && <ManageSellers />}
                 {activeTab === "products" && <ManageProducts />}
+                {activeTab === "team" && <ManageTeam />}
               </div>
             </>
           )}
