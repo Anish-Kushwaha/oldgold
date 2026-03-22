@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { LogIn, LogOut, Package, Shield, Store, Users } from "lucide-react";
+import { LogIn, LogOut, Package, Shield, Store, Users, Crown } from "lucide-react";
 import { toast } from "sonner";
 import ManageAdmins from "@/components/admin/ManageAdmins";
 import ManageSellers from "@/components/admin/ManageSellers";
