@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import anishPhoto from "@/assets/Anish.png";
-import bhavyaPhoto from "@/assets/Bhavya.jpg";
-import shubhamPhoto from "@/assets/Shubham.jpg";
-import piyuPhoto from "@/assets/Piyu.jpg";
 import {
   Github, Linkedin, Twitter, Youtube, Mail, Globe, Code, Trophy,
   Gamepad2, Send, Facebook, Phone, MessageCircle, Crown, Star,

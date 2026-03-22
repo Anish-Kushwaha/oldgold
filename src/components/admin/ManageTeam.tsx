@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, Trash2, Edit2, Save, X, Plus } from "lucide-react";
+import { Users, Trash2, Edit2, Save, X, Plus, Upload, Image } from "lucide-react";
 import { toast } from "sonner";
 
 interface TeamMember {
@@ -27,6 +27,8 @@ const ManageTeam = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<typeof emptyForm>(emptyForm);
   const [adding, setAdding] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchMembers = async () => {
     setLoading(true);
@@ -36,6 +38,28 @@ const ManageTeam = () => {
   };
 
   useEffect(() => { fetchMembers(); }, []);
+
+  const uploadPhoto = async (file: File) => {
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("team-photos").upload(fileName, file, { upsert: true });
+    if (error) {
+      toast.error("Photo upload failed");
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("team-photos").getPublicUrl(fileName);
+    setForm((prev) => ({ ...prev, photo_url: urlData.publicUrl }));
+    toast.success("Photo uploaded!");
+    setUploading(false);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadPhoto(file);
+    e.target.value = "";
+  };
 
   const startEdit = (m: TeamMember) => {
     setEditingId(m.id);
@@ -96,7 +120,39 @@ const ManageTeam = () => {
         <input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="WhatsApp" className={inputCls} />
         <input type="number" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value) || 0 })} placeholder="Order" className={inputCls} />
       </div>
-      <input value={form.photo_url} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} placeholder="Photo URL (optional)" className={inputCls} />
+
+      {/* Photo upload */}
+      <div className="space-y-1">
+        <label className="text-xs font-medium text-muted-foreground">Photo</label>
+        <div className="flex items-center gap-2">
+          {form.photo_url && (
+            <img src={form.photo_url} alt="Preview" className="w-10 h-10 rounded-full object-cover border border-border" />
+          )}
+          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-1 px-3 py-1 rounded-md bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors disabled:opacity-50"
+          >
+            {uploading ? (
+              <>Uploading...</>
+            ) : (
+              <><Upload className="h-3 w-3" /> {form.photo_url ? "Change Photo" : "Upload Photo"}</>
+            )}
+          </button>
+          {form.photo_url && (
+            <button
+              type="button"
+              onClick={() => setForm({ ...form, photo_url: "" })}
+              className="text-xs text-destructive hover:underline"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      </div>
+
       <label className="flex items-center gap-2 text-xs">
         <input type="checkbox" checked={form.is_founder} onChange={(e) => setForm({ ...form, is_founder: e.target.checked })} />
         Founder (premium card)
@@ -139,6 +195,9 @@ const ManageTeam = () => {
         {members.map((m) => (
           <div key={m.id} className="bg-background rounded-lg border border-border p-3">
             <div className="flex items-center gap-3">
+              {m.photo_url && (
+                <img src={m.photo_url} alt={m.name} className="w-8 h-8 rounded-full object-cover border border-border" />
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
                   {m.name} {m.is_founder && <span className="text-primary text-xs">★ Founder</span>}
