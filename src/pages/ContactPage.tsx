@@ -11,13 +11,8 @@ const iconMap: Record<string, any> = {
   Globe, Github, Linkedin, Twitter, Facebook, Youtube, Send, Code, Trophy, Gamepad2, Mail,
 };
 
-// Fallback photos by name
-const photoMap: Record<string, string> = {
-  "Anish Kushwaha": anishPhoto,
-  "Bhavya Pandey": bhavyaPhoto,
-  "Shubham Prakash": shubhamPhoto,
-  "Priyanshi Bairagi": piyuPhoto,
-};
+// Fallback photo only for founder
+const founderFallback = anishPhoto;
 
 interface TeamMember {
   id: string;
