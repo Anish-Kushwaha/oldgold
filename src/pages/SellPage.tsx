@@ -103,12 +103,21 @@ const SellPage = () => {
                 >
                   <Package className="h-4 w-4" /> Products
                 </button>
+                <button
+                  onClick={() => setActiveTab("team")}
+                  className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "team" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Crown className="h-4 w-4" /> Team
+                </button>
               </div>
 
               <div className="bg-card rounded-lg border border-border p-6">
                 {activeTab === "admins" && <ManageAdmins />}
                 {activeTab === "sellers" && <ManageSellers />}
                 {activeTab === "products" && <ManageProducts />}
+                {activeTab === "team" && <ManageTeam />}
               </div>
             </>
           )}
