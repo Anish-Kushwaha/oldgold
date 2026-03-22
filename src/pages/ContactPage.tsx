@@ -86,7 +86,7 @@ const ContactPage = () => {
    FOUNDER — premium, full-width card
    ═══════════════════════════════════════════ */
 const FounderCard = ({ member }: { member: TeamMember }) => {
-  const photo = member.photo_url || photoMap[member.name] || "";
+  const photo = member.photo_url || founderFallback;
   const socials = (member.social_links || []) as { icon: string; label: string; url: string }[];
   const companies = (member.companies || []) as { name: string; url: string }[];
 
