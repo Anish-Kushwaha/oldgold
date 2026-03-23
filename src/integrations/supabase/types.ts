@@ -154,6 +154,7 @@ export type Database = {
           id: string
           is_seller_approved: boolean
           phone: string | null
+          seller_requested: boolean
           updated_at: string
           whatsapp: string | null
         }
@@ -166,6 +167,7 @@ export type Database = {
           id: string
           is_seller_approved?: boolean
           phone?: string | null
+          seller_requested?: boolean
           updated_at?: string
           whatsapp?: string | null
         }
@@ -178,6 +180,7 @@ export type Database = {
           id?: string
           is_seller_approved?: boolean
           phone?: string | null
+          seller_requested?: boolean
           updated_at?: string
           whatsapp?: string | null
         }

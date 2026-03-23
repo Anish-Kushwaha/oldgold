@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN seller_requested boolean NOT NULL DEFAULT false;
