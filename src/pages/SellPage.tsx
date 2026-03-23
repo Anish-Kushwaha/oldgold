@@ -11,6 +11,66 @@ import SellerProfileForm from "@/components/seller/SellerProfileForm";
 import AddProductForm from "@/components/seller/AddProductForm";
 import MyProducts from "@/components/seller/MyProducts";
 
+const RegularUserPanel = () => {
+  const { user } = useAuth();
+  const [requested, setRequested] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("seller_requested")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setRequested(data?.seller_requested || false);
+        setLoading(false);
+      });
+  }, [user]);
+
+  const requestAccess = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ seller_requested: true })
+      .eq("id", user.id);
+
+    if (error) {
+      toast.error("Failed to send request.");
+    } else {
+      toast.success("Seller access requested! An admin will review your request.");
+      setRequested(true);
+    }
+  };
+
+  if (loading) return null;
+
+  return (
+    <div className="bg-card rounded-lg border border-border p-6 text-center">
+      <Store className="h-12 w-12 text-primary mx-auto mb-3" />
+      <h3 className="font-display text-lg font-bold mb-2">Become a Seller</h3>
+      {requested ? (
+        <p className="text-sm text-amber-600 font-medium">
+          ✅ Your seller request has been submitted! An admin will review it shortly.
+        </p>
+      ) : (
+        <>
+          <p className="text-sm text-muted-foreground mb-4">
+            Want to sell your items on OldGold? Request seller access and an admin will review your application.
+          </p>
+          <button
+            onClick={requestAccess}
+            className="px-6 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity"
+          >
+            Request Seller Access
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
 const SellPage = () => {
   const { user, loading, signIn, signUp, signOut, isAdmin, isSupremeAdmin, roles } = useAuth();
   const [email, setEmail] = useState("");
