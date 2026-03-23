@@ -150,14 +150,9 @@ const SellPage = () => {
             </div>
           )}
 
-          {/* Regular user */}
+          {/* Regular user - Request Seller Access */}
           {!isAdmin && !isSeller && (
-            <div className="bg-card rounded-lg border border-border p-6">
-              <h3 className="font-display text-lg font-bold mb-2">Seller Status</h3>
-              <p className="text-sm text-muted-foreground">
-                Your account doesn't have seller privileges yet. Contact an admin to get approved as a seller.
-              </p>
-            </div>
+            <RegularUserPanel />
           )}
 
           <button
