@@ -123,7 +123,7 @@ const SellPage = () => {
             <h2 className="font-display text-2xl font-bold mb-1">
               {isSupremeAdmin ? "Supreme Admin Dashboard" : isAdmin ? "Admin Dashboard" : "Seller Dashboard"}
             </h2>
-            <p className="text-sm text-muted-foreground">Welcome, {user.email}</p>
+            <p className="text-sm text-muted-foreground">Welcome, {user.user_metadata?.full_name || user.email}</p>
             <div className="flex gap-2 flex-wrap mt-2">
               {roles.map((role) => (
                 <span key={role} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
