@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { LogIn, LogOut, Package, Shield, Store, Users, Crown } from "lucide-react";
 import { toast } from "sonner";
 import ManageAdmins from "@/components/admin/ManageAdmins";
