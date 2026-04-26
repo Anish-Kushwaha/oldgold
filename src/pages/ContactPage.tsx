@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import anishPhoto from "@/assets/Anish.png";
+import type { LucideIcon } from "lucide-react";
 import {
   Github, Linkedin, Twitter, Youtube, Mail, Globe, Code, Trophy,
   Gamepad2, Send, Facebook, Phone, MessageCircle, Crown, Star,
   Shield, ExternalLink, Building2
 } from "lucide-react";
 
-const iconMap: Record<string, any> = {
+type SocialLink = { icon: string; label: string; url: string };
+type CompanyLink = { name: string; url: string };
+
+const iconMap: Record<string, LucideIcon> = {
   Globe, Github, Linkedin, Twitter, Facebook, Youtube, Send, Code, Trophy, Gamepad2, Mail,
 };
 
@@ -24,8 +28,8 @@ interface TeamMember {
   phone: string | null;
   whatsapp: string | null;
   photo_url: string | null;
-  social_links: any[];
-  companies: any[];
+  social_links: SocialLink[];
+  companies: CompanyLink[];
   display_order: number;
   is_founder: boolean;
 }

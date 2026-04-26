@@ -73,7 +73,11 @@ const shareProduct = async (product: Product) => {
   const url = `${window.location.origin}/buy?item=${product.id}`;
   const shareData = { title: product.name, text: `Check out ${product.name} for ₹${product.price} on OldGold!`, url };
   if (navigator.share) {
-    try { await navigator.share(shareData); } catch {}
+    try {
+      await navigator.share(shareData);
+    } catch {
+      copyToClipboard(url);
+    }
   } else {
     copyToClipboard(url);
   }
@@ -183,8 +187,8 @@ const ProductDetail = ({ product, onBack }: { product: Product; onBack: () => vo
   useEffect(() => {
     addToRecent({ id: product.id, name: product.name, price: product.price, image_url: product.image_url });
     // Increment view count
-    supabase.rpc("increment_view_count" as any, { product_id: product.id }).then(() => {});
-  }, [product.id]);
+    supabase.rpc("increment_view_count", { product_id: product.id }).then(() => {});
+  }, [addToRecent, product.id, product.image_url, product.name, product.price]);
 
   useEffect(() => {
     const fetchSeller = async () => {
@@ -372,7 +376,7 @@ const BuyPage = () => {
   }, [selectedItemId]);
 
   const filtered = useMemo(() => {
-    let result = products.filter((p) => {
+    const result = products.filter((p) => {
       const matchesCat = activeCategory === "all" || p.category === activeCategory;
       const matchesSearch = p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) || (p.description || "").toLowerCase().includes(debouncedSearch.toLowerCase()) || (p.brand || "").toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesCondition = conditionFilter === "all" || p.condition === conditionFilter;
