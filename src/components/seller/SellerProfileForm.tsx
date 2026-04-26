@@ -31,11 +31,12 @@ const SellerProfileForm = () => {
       .maybeSingle()
       .then(({ data }) => {
         if (data) {
+          const profileData = data as Partial<Profile>;
           setProfile({
-            phone: data.phone || "",
-            whatsapp: data.whatsapp || "",
-            address: data.address || "",
-            extra_details: (data as any).extra_details || "",
+            phone: profileData.phone || "",
+            whatsapp: profileData.whatsapp || "",
+            address: profileData.address || "",
+            extra_details: profileData.extra_details || "",
           });
         }
         setLoaded(true);
@@ -56,7 +57,7 @@ const SellerProfileForm = () => {
         whatsapp: profile.whatsapp.trim(),
         address: profile.address.trim(),
         extra_details: profile.extra_details.trim() || null,
-      } as any)
+      })
       .eq("id", user.id);
 
     if (error) {
