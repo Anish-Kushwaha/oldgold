@@ -2,151 +2,76 @@
 
 > Turning old into gold.
 
-OldGold is a modern marketplace platform that allows users to **buy and sell second-hand household items** at affordable prices. It provides a structured ecosystem with **seller onboarding, product listings, and admin moderation**.
+OldGold is a marketplace platform where users can buy and sell second-hand items. The app is built with **React + Vite** and uses **Supabase** for authentication, database, storage, and edge functions.
 
 ---
 
 ## 🚀 Features
 
 - 🏠 Buy & sell used household items
-- 📦 Multiple categories (Electronics, Furniture, Clothes, Stationery, Others)
-- 👤 Seller registration & profile system
-- 🛒 Product listing with images, price (INR), and description
-- 🔐 Secure authentication system
-- 🧑‍💼 Admin panel (Supreme Admin & Secondary Admin)
-- ✅ Seller approval system
-- ⚙️ Product management (add/edit/delete)
-- 📱 Fully responsive design
-
----
-
-## 🧭 Pages
-
-- **Home** – Platform overview and features  
-- **Buy** – Browse products by categories  
-- **Sell** – Register/login and add products  
-- **Support** – Legal disclaimer and policies  
-- **Contact** – Creator information and social links  
+- 📦 Category-based browsing
+- 👤 Seller onboarding and profile completion
+- 🛒 Product listing with images and pricing
+- 🔐 Supabase authentication + role-based access
+- 🧑‍💼 Admin moderation (supreme admin/admin)
+- ✅ Product approval and seller workflows
+- 📱 Responsive UI
 
 ---
 
 ## 🏗️ Tech Stack
 
-**Frontend:**
-- HTML5, CSS3, JavaScript *(or React)*
-
-**Backend:**
-- Node.js + Express *(or Django alternative)*
-
-**Database:**
-- MongoDB
+- **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
+- **Backend:** Supabase (Postgres + Auth + Storage + Edge Functions)
+- **Deployment:** Vercel (frontend) + Supabase (backend)
 
 ---
 
-## 🔐 User Roles
+## ⚙️ Local Setup
 
-### 👑 Supreme Admin
-- Full control over the system  
-- Manage secondary admins  
-- Approve/reject sellers  
-- Modify/delete seller profiles  
+```bash
+# 1) Install deps
+npm install
 
-### 🛡️ Secondary Admin
-- Approve sellers  
-- Manage product listings  
+# 2) Create .env from example values
+# Required:
+# VITE_SUPABASE_URL
+# VITE_SUPABASE_PUBLISHABLE_KEY
 
-### 🧑 Seller
-- Register & login  
-- Add/manage products  
-- Provide contact details  
+# 3) Start app
+npm run dev
+```
 
----
+Build/test/lint:
 
-## 📂 Categories
-
-- ⚡ Electronics (TV, AC, Fan, Refrigerator, etc.)
-- 🪑 Furniture (Chair, Table, Bed, Desk)
-- 👕 Clothes (Shirts, Jeans, Shoes, etc.)
-- ✏️ Stationery (Books, Pens, Copies)
-- 📦 Others
+```bash
+npm run lint
+npm run build
+npm test
+```
 
 ---
 
-## ⚙️ Installation & Setup
+## 🌐 Vercel Deployment Checklist
 
-    # Clone the repository
-    git clone https://github.com/your-username/oldgold.git
-
-    # Navigate to project folder
-    cd oldgold
-
-    # Install dependencies
-    npm install
-
-    # Start development server
-    npm start
+1. Import repo into Vercel.
+2. Set framework preset to **Vite**.
+3. Add environment variables in Vercel project settings:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+4. Deploy. A `vercel.json` rewrite is included so React Router routes work on refresh.
 
 ---
 
-## 🌐 Project Structure
+## 🗄️ Database / Supabase Checklist
 
-    oldgold/
-    │
-    ├── frontend/
-    │   ├── index.html
-    │   ├── css/
-    │   ├── js/
-    │
-    ├── backend/
-    │   ├── server.js
-    │   ├── routes/
-    │   ├── models/
-    │
-    ├── assets/
-    │   ├── logo.png
-    │   ├── Anish.png
-    │
-    └── README.md
-
----
-
-## ⚠️ Disclaimer
-
-The owner of this platform is **not responsible** for:
-- Product quality or damage  
-- Mismanagement between buyer and seller  
-- Price negotiations  
-
----
-
-## 👨‍💻 Creator
-
-**Anish Kushwaha**  
-Founder & Developer of OldGold  
-
-📧 Email: Anishkushwahag2@gmail.com  
-📧 Proton Mail: Anish_Kushwaha@proton.me  
-📱 Phone/WhatsApp: +91 8340482877  
-
----
-
-## 🌍 Connect With Me
-
-- 🌐 Portfolio: https://anish-kushwaha.github.io  
-- 💼 LinkedIn: https://linkedin.com/in/anish-kushwaha-43a915383  
-- 💻 GitHub: https://github.com/Anish-Kushwaha  
-- 🐦 Twitter (X): https://twitter.com/Anish_Kushwaha_  
-- 📺 YouTube: https://www.youtube.com/@cosmologist_anish  
+1. In Supabase, run migrations from `supabase/migrations`.
+2. Deploy edge functions in `supabase/functions` (for admin operations).
+3. Ensure RLS policies and RPC functions used by the app are present.
+4. Confirm storage buckets used by the app exist (e.g., product/team photos).
 
 ---
 
 ## 📜 License
 
-© 2026 Anish Kushwaha • All rights reserved  
-🔗 https://anish-kushwaha.online  
-
----
-
-## ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub and share it!
+© 2026 Anish Kushwaha • All rights reserved.

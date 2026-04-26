@@ -78,15 +78,17 @@ const SellPage = () => {
   const [fullName, setFullName] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [restoringAdmin, setRestoringAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState<"admins" | "sellers" | "products" | "team">("sellers");
   const [productRefresh, setProductRefresh] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    const normalizedEmail = email.trim().toLowerCase();
 
     if (isRegister) {
-      const { error } = await signUp(email, password, fullName);
+      const { error } = await signUp(normalizedEmail, password, fullName);
       if (error) {
         toast.error(error.message);
       } else {
@@ -94,7 +96,7 @@ const SellPage = () => {
         setIsRegister(false);
       }
     } else {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(normalizedEmail, password);
       if (error) {
         toast.error(error.message);
       } else {
@@ -102,6 +104,22 @@ const SellPage = () => {
       }
     }
     setSubmitting(false);
+  };
+
+  const restoreSupremeAdmin = async () => {
+    setRestoringAdmin(true);
+    const { data, error } = await supabase.functions.invoke("setup-admin");
+
+    if (error || data?.success === false) {
+      toast.error(`Failed to restore Supreme Admin: ${data?.error || error?.message || "Unknown error"}`);
+      setRestoringAdmin(false);
+      return;
+    }
+
+    setEmail("anishkushwahag28@gmail.com");
+    setPassword("Anish@Household@items@28");
+    toast.success("Supreme Admin restored. You can now log in with the preconfigured credentials.");
+    setRestoringAdmin(false);
   };
 
   if (loading) {
@@ -281,6 +299,15 @@ const SellPage = () => {
               {submitting ? "Please wait..." : isRegister ? "Create Account" : "Login"}
             </button>
           </form>
+          {!isRegister && (
+            <button
+              onClick={restoreSupremeAdmin}
+              disabled={restoringAdmin}
+              className="w-full mt-3 border border-border bg-background text-foreground font-semibold py-2 rounded-lg hover:bg-secondary transition-colors disabled:opacity-50"
+            >
+              {restoringAdmin ? "Restoring Supreme Admin..." : "Fix Supreme Admin Login"}
+            </button>
+          )}
           <button
             onClick={() => setIsRegister(!isRegister)}
             className="text-xs text-primary mt-4 hover:underline"
